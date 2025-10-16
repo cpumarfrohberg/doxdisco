@@ -62,6 +62,5 @@ class FileProcessingConfig(Enum):
     BLOCKED_EXTENSIONS = {"exe", "bat", "sh", "py", "js", "jar", "dll", "so"}
 
 
-# OpenAI configuration
 API_KEY = os.getenv("OPENAI_API_KEY")
 openai_client = OpenAI(api_key=API_KEY)

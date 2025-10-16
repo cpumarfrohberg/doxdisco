@@ -1,4 +1,3 @@
-# Text-based RAG implementation for GitHub repository analysis
 from typing import Callable, List
 
 from minsearch import Index
@@ -38,7 +37,6 @@ class TextRAG:
         self.index = None
         self.embedder = None
 
-        # Initialize embedder if using SentenceTransformers
         if search_type == SearchType.VECTOR_SENTENCE_TRANSFORMERS.value:
             try:
                 self.embedder = SentenceTransformer(model_name)
