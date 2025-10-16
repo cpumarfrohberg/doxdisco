@@ -1,0 +1,49 @@
+[project]
+name = "zippa"
+version = "0.1.5"
+description = "A Python utility for zipping directories and files"
+authors = [
+    {name = "Carlos Pumar-Frohberg", email = "cpumarfrohberg@gmail.com"}
+]
+requires-python = ">=3.11"
+readme = "README.md"
+license = "MIT"
+
+dependencies = [
+    "python-dotenv==1.1.0",
+    "pydantic>=2.6.1",
+    "typer>=0.16.0",
+]
+
+[project.scripts]
+zippa = "zippa.cli:app"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.0",
+    "pytest-cov>=6.2.1",
+    "pre-commit>=4.2.0",
+    "ty>=0.0.1a21",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["zippa"]
+
+[tool.setuptools.package-data]
+"*" = ["*.py"]
+
+[tool.uv.workspace]
+members = []
+
+[tool.coverage.run]
+omit = [
+    "zippa/cli.py",
+]
