@@ -22,7 +22,7 @@ dependencies = [
 ]
 
 [project.scripts]
-disco = "cli:main"
+disco = "cli:app"
 
 [dependency-groups]
 dev = [
