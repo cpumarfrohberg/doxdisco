@@ -18,7 +18,7 @@
 $ uv run disco "How do I install this package?"
 
 # Use vector search for better semantic understanding
-$ uv run disco "How to configure authentication?" --search-type vector_sentence_transformers
+$ uv run disco "I'm interested in implementing an agent-framework, which part of the docs should I first read?" --search-type vector_sentence_transformers
 
 # Customize chunking parameters (chunk_size, overlap)
 $ uv run disco "What are the main features?" 1500 0.3
@@ -37,9 +37,6 @@ $ uv run disco "authentication setup" --search-type vector_sentence_transformers
 
 ### Repository Options
 ```bash
-# Different repository
-$ uv run disco "What are the main features?" --owner facebook --repo react
-
 # Different file types
 $ uv run disco "API documentation" --extensions md,rst,txt
 ```
