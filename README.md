@@ -1,94 +1,80 @@
-<h1 align="center">Automate dir zipping⚡️</h1>
-CLI for flexibly zipping and extracting items.
+<h1 align="center">DoxDisco - GitHub Documentation Discovery🔍</h1>
+<p align="center">CLI for asking questions about GitHub repository documentation using RAG (Retrieval-Augmented Generation).</p>
 
 ## Features
-* compress files and dirs as required
-    - run command for zipping dirs/files of choice
-    - run command for defining where compressed files should live
+* Ask questions about GitHub repository documentation
+* Support for text and vector search methods
+* Multiple search types (text, vector with Minsearch, vector with SentenceTransformers)
 
 ## Prerequisites
-* Python 3.12+
-* Git
+* Python 3.11+
+* OpenAI API key (set as OPENAI_API_KEY environment variable)
 * uv (recommended) or pip
 
 ## Quick Start
 
 ```bash
-# Compress current directory
-$ uv run zippa pack .
+# Ask a basic question about repository documentation
+$ disco ask "How do I install this package?"
 
-# Compress specific files
-$ uv run zippa pack file1.txt dir1/ file2.py
+# Use vector search for better semantic understanding
+$ disco ask "How to configure authentication?" --search-type vector_sentence_transformers
 
-# Extract zip file
-$ uv run zippa extract backup.zip
+# Customize chunking parameters (chunk_size, overlap)
+$ disco ask "What are the main features?" 1500 0.3
 
-# Extract to specific directory
-$ uv run zippa extract backup.zip --output /path/to/extract/
+# Ask about a different repository
+$ disco ask "What is this project about?" --owner pydantic --repo pydantic-ai
 ```
 
-## Common Patterns
+## Examples
 
-### Working with Different Directories
-
+### Search Types
 ```bash
-# Compress from external directory
-$ uv run zippa pack . --work-dir ~/path/to/project --output backup.zip
+# Text search (fast, keyword-based)
+$ disco ask "installation guide" --search-type text
 
-# Compress specific files from external directory
-$ uv run zippa pack file1.txt dir1/ --work-dir ~/path/to/project
+# Vector search (better semantic understanding)
+$ disco ask "authentication setup" --search-type vector_sentence_transformers
 ```
 
-### Excluding Files
-
+### Repository Options
 ```bash
-# Exclude patterns via command line
-$ uv run zippa pack . --exclude "*.pyc" --exclude "__pycache__"
+# Different repository
+$ disco ask "What are the main features?" --owner facebook --repo react
 
-# Use .zipignore file (create in project root)
-$ uv run zippa pack . --exclude-file .zipignore
+# Different file types
+$ disco ask "API documentation" --extensions md,rst,txt
 ```
 
-### Overwrite Protection
+## Configuration
 
-```bash
-# Default: Skip if files exist (safe)
-$ uv run zippa pack . --output backup.zip
+### Environment Variables
 
-# Ask before overwriting (interactive)
-$ uv run zippa pack . --output backup.zip --ask
-
-# Force overwrite (non-interactive)
-$ uv run zippa pack . --output backup.zip --force-overwrite
-```
-
-## .zipignore File
-
-Create a `.zipignore` file in your project root:
+Create a `.env` file in your project root:
 
 ```
-# .zipignore example
-*.pyc
-__pycache__/
-*.log
-*.tmp
-.git/
-node_modules/
-.env
-*.DS_Store
-build/
-dist/
-*.egg-info/
+OPENAI_API_KEY=your_openai_api_key_here
 ```
+
+### Default Settings
+
+- **Default Repository**: pydantic/pydantic-ai
+- **Default File Extensions**: md, mdx
+- **Default Search Type**: text
+- **Default Chunk Size**: 2000 characters
+- **Default Overlap**: 0.5 (50%)
 
 ## Notes
 
-- Items are relative to your current working directory (or `--work-dir` if specified)
-- Output location can be anywhere (absolute or relative path)
+- Repository content is downloaded and processed on first use
+- Vector search models are downloaded automatically when needed
+- Use `--verbose` flag to see detailed processing information
 - Use `--help` for complete command reference
 
 
 ## Future Updates
-* [ ] make syntax for running commands more intuitive
-* [ ] implement compression summary after each compression
-* [ ] listen to events and compress correspondently
+* [ ] Add support for private repositories with authentication
+* [ ] Implement caching for better performance
+* [ ] Add support for more file formats (PDF, Word docs)
+* [ ] Implement conversation memory for follow-up questions
