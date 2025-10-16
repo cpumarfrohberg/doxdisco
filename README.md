@@ -15,16 +15,13 @@
 
 ```bash
 # Ask a basic question about repository documentation
-$ disco ask "How do I install this package?"
+$ uv run disco "How do I install this package?"
 
 # Use vector search for better semantic understanding
-$ disco ask "How to configure authentication?" --search-type vector_sentence_transformers
+$ uv run disco "How to configure authentication?" --search-type vector_sentence_transformers
 
 # Customize chunking parameters (chunk_size, overlap)
-$ disco ask "What are the main features?" 1500 0.3
-
-# Ask about a different repository
-$ disco ask "What is this project about?" --owner pydantic --repo pydantic-ai
+$ uv run disco "What are the main features?" 1500 0.3
 ```
 
 ## Examples
@@ -32,19 +29,19 @@ $ disco ask "What is this project about?" --owner pydantic --repo pydantic-ai
 ### Search Types
 ```bash
 # Text search (fast, keyword-based)
-$ disco ask "installation guide" --search-type text
+$ uv run disco "installation guide" --search-type text
 
 # Vector search (better semantic understanding)
-$ disco ask "authentication setup" --search-type vector_sentence_transformers
+$ uv run disco "authentication setup" --search-type vector_sentence_transformers
 ```
 
 ### Repository Options
 ```bash
 # Different repository
-$ disco ask "What are the main features?" --owner facebook --repo react
+$ uv run disco "What are the main features?" --owner facebook --repo react
 
 # Different file types
-$ disco ask "API documentation" --extensions md,rst,txt
+$ uv run disco "API documentation" --extensions md,rst,txt
 ```
 
 ## Configuration

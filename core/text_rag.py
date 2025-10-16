@@ -5,7 +5,6 @@ from minsearch import Index
 from sentence_transformers import SentenceTransformer
 
 from config import (
-    InstructionType,
     SearchType,
     SentenceTransformerModel,
     openai_client,
@@ -95,9 +94,7 @@ class TextRAG:
 
         self.documents = parsed_data
 
-    def query(
-        self, question: str, instruction_type: str = InstructionType.FAQ_ASSISTANT.value
-    ) -> str:
+    def query(self, question: str, instruction_type: str = "faq_assistant") -> str:
         """Query the repository using text-based search"""
         if not self.index:
             raise ValueError("No repository loaded. Call load_repository() first.")
