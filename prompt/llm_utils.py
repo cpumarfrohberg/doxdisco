@@ -4,17 +4,19 @@ from typing import Any, Dict, List
 
 from openai import OpenAI
 
-from config import ModelType
+from config import InstructionType, ModelType
 
 from .models import RAGAnswer
 from .search_utils import RAGError
+
+CONFIDENCE = 0.5
 
 
 def query_with_context(
     question: str,
     index: Any | None = None,
     openai_client: OpenAI | None = None,
-    instruction_type: str = "faq_assistant",
+    instruction_type: str = InstructionType.PYDANTIC_AI_EXPERT.value,
 ) -> RAGAnswer:
     """
     Answer a question using RAG with structured Pydantic output.
@@ -131,7 +133,7 @@ Provide a clear answer and rate your confidence from 0.0 to 1.0.
         answer_text = response.output_text.strip()
 
         # Extract confidence if mentioned
-        confidence = 0.5  # Default confidence
+        confidence = CONFIDENCE  # Default confidence
         if "confidence" in answer_text.lower():
             try:
                 confidence_match = re.search(

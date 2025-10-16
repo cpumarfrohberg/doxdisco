@@ -1,6 +1,8 @@
 # Document search utilities
 from typing import Any, Dict, List
 
+NUM_RESULTS = 5
+
 
 class RAGError(Exception):
     """Base exception for RAG-related errors"""
@@ -33,17 +35,35 @@ def search_documents(question: str, index: Any | None = None) -> List[Dict[str, 
         if index is None:
             raise RAGError("Search index is required")
 
+        # Define boost strategy for functions and tools
+        boost_dict = {
+            # Core programming concepts (highest priority)
+            "def ": 2.5,  # Function definitions
+            "function": 2.0,  # Function mentions
+            "tool": 2.0,  # Tool mentions
+            "tools": 2.0,  # Tools plural
+            # Implementation details (medium priority)
+            "return": 1.4,  # Return statements
+            "yield": 1.4,  # Yield statements
+            "async": 1.3,  # Async functions
+            "await": 1.3,  # Await statements
+            # Documentation (lower priority but still useful)
+            "example": 1.2,  # Examples
+            "usage": 1.2,  # Usage patterns
+            "note": 1.1,  # Notes
+        }
+
         # Check if it's a vector index by checking the class name
         if hasattr(index, "__class__") and "VectorIndex" in str(index.__class__):
             # Vector search (query, num_results)
-            results = index.search(question, num_results=5)
+            results = index.search(question, num_results=NUM_RESULTS)
         else:
-            # Text search (minsearch)
+            # Text search (minsearch) with boosting
             results = index.search(
                 question,
-                boost_dict={},
+                boost_dict=boost_dict,
                 filter_dict={},
-                num_results=5,
+                num_results=NUM_RESULTS,
             )
 
         if not results:

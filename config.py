@@ -32,6 +32,13 @@ class SearchType(Enum):
     VECTOR_SENTENCE_TRANSFORMERS = "vector_sentence_transformers"
 
 
+class InstructionType(Enum):
+    """Types of instruction/prompt templates for different AI roles"""
+
+    FAQ_ASSISTANT = "faq_assistant"
+    PYDANTIC_AI_EXPERT = "pydantic_ai_expert"
+
+
 class SentenceTransformerModel(Enum):
     # Small models (fast, good for testing)
     ALL_MINILM_L6_V2 = "all-MiniLM-L6-v2"

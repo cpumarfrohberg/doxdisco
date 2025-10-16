@@ -4,6 +4,8 @@ from typing import Any, Dict, List
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
+NUM_RESULTS = 5
+
 
 class VectorIndex:
     """Vector-based search index using SentenceTransformers embeddings"""
@@ -37,7 +39,9 @@ class VectorIndex:
         self.embeddings = self.model.encode(texts, show_progress_bar=True)
         print(f"✅ Created embeddings with shape: {self.embeddings.shape}")
 
-    def search(self, query: str, num_results: int = 5) -> List[Dict[str, Any]]:
+    def search(
+        self, query: str, num_results: int = NUM_RESULTS
+    ) -> List[Dict[str, Any]]:
         """Search for similar chunks using vector similarity"""
         # Compute query embedding
         query_embedding = self.model.encode([query])
@@ -45,10 +49,8 @@ class VectorIndex:
         # Compute cosine similarity
         similarities = np.dot(self.embeddings, query_embedding.T).flatten()
 
-        # Get top results
         top_indices = np.argsort(similarities)[::-1][:num_results]
 
-        # Return results with similarity scores
         results = []
         for idx in top_indices:
             result = self.chunks[idx].copy()
