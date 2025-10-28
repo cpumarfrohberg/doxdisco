@@ -5,9 +5,9 @@ from typing import Any, Dict, List
 from openai import OpenAI
 
 from config import InstructionType, ModelType
-
-from .models import RAGAnswer
-from .search_utils import RAGError
+from prompt.models import RAGAnswer
+from prompt.prompt_builder import build_prompt
+from prompt.search_utils import RAGError, search_documents
 
 CONFIDENCE = 0.5
 
@@ -37,26 +37,16 @@ def query_with_context(
         raise RAGError("OpenAI client is required")
 
     try:
-        # Import here to avoid circular imports
-        from .prompt_builder import build_prompt
-        from .search_utils import search_documents
-
-        # Search for relevant documents
         search_results: List[Dict[str, Any]] = search_documents(question, index)
 
-        # Build the prompt
         user_prompt: str = build_prompt(question, search_results, instruction_type)
-
-        # Prepare messages
         messages = [{"role": "user", "content": user_prompt}]
 
-        # Try structured output first
         try:
             response = openai_client.responses.parse(
                 model=ModelType.GPT_4O_MINI.value, input=messages, text_format=RAGAnswer
             )
 
-            # Validate the response
             rag_answer = response.output_parsed
             if not rag_answer.answer.strip():
                 raise RAGError("Empty answer received from LLM")
@@ -64,7 +54,6 @@ def query_with_context(
             return rag_answer
 
         except Exception as e:
-            # If structured output fails, try fallback
             print("⚠️  Structured output failed, trying fallback...")
             try:
                 fallback_response = _generate_fallback_response(
@@ -129,11 +118,9 @@ Provide a clear answer and rate your confidence from 0.0 to 1.0.
             model=ModelType.GPT_4O_MINI.value, input=messages
         )
 
-        # Parse the response manually
         answer_text = response.output_text.strip()
 
-        # Extract confidence if mentioned
-        confidence = CONFIDENCE  # Default confidence
+        confidence = CONFIDENCE
         if "confidence" in answer_text.lower():
             try:
                 confidence_match = re.search(
@@ -144,7 +131,6 @@ Provide a clear answer and rate your confidence from 0.0 to 1.0.
             except (ValueError, AttributeError):
                 pass
 
-        # Extract sources
         sources_used = [
             result.get("filename", "unknown") for result in search_results[:3]
         ]

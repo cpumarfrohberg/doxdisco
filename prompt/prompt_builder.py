@@ -3,8 +3,7 @@ import json
 from typing import Any, Dict, List
 
 from config import InstructionType
-
-from .models import SearchResult
+from prompt.models import SearchResult
 
 
 def build_prompt(
