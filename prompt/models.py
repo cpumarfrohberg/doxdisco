@@ -1,6 +1,6 @@
 # Pydantic models for structured RAG output
 from datetime import datetime
-from typing import List, Optional
+from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -23,7 +23,7 @@ class RAGAnswer(BaseModel):
     confidence: float = Field(
         ..., ge=0.0, le=1.0, description="Confidence in the answer (0.0 to 1.0)"
     )
-    sources_used: List[str] = Field(
+    sources_used: list[str] = Field(
         ..., description="List of filenames used as sources"
     )
     reasoning: Optional[str] = Field(

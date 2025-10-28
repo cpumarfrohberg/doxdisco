@@ -1,9 +1,9 @@
 # Document chunking utilities for splitting large documents into smaller, overlapping pieces.
 
-from typing import Any, Dict, Iterable, List
+from typing import Any, Iterable
 
 
-def _sliding_window(seq: Iterable[Any], size: int, step: int) -> List[Dict[str, Any]]:
+def _sliding_window(seq: Iterable[Any], size: int, step: int) -> list[dict[str, Any]]:
     """
     Create overlapping chunks from a sequence using a sliding window approach.
 
@@ -39,11 +39,11 @@ def _sliding_window(seq: Iterable[Any], size: int, step: int) -> List[Dict[str, 
 
 
 def chunk_documents(
-    documents: Iterable[Dict[str, str]],
+    documents: Iterable[dict[str, str]],
     size: int | None = None,
     step: int | None = None,
     content_field_name: str | None = None,
-) -> List[Dict[str, str]]:
+) -> list[dict[str, str]]:
     """
     Split a collection of documents into smaller chunks using sliding windows.
 

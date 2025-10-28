@@ -3,7 +3,7 @@ import io
 import traceback
 import zipfile
 from dataclasses import dataclass
-from typing import Callable, List, Optional
+from typing import Callable, Optional
 
 import requests
 from pydantic import BaseModel, Field, HttpUrl, ValidationError
@@ -40,7 +40,7 @@ def read_github_data(
     repo_name: str,
     allowed_extensions: set | None = None,
     filename_filter: Callable | None = None,
-) -> List[RawRepositoryFile]:
+) -> list[RawRepositoryFile]:
     try:
         request = RepositoryRequest(
             repo_owner=repo_owner,
@@ -106,7 +106,7 @@ def _extract_files(
     filename_filter: Callable,
     github_config: GitHubRequestConfig,
     file_config: type,
-) -> List[RawRepositoryFile]:
+) -> list[RawRepositoryFile]:
     """Extract and process files from the zip archive with security checks."""
     data = []
     skipped_stats = {"oversized": 0, "unsafe_type": 0, "filtered": 0, "processed": 0}

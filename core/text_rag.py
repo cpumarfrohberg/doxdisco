@@ -1,4 +1,4 @@
-from typing import Callable, List
+from typing import Callable
 
 from minsearch import Index
 from sentence_transformers import SentenceTransformer
@@ -22,7 +22,7 @@ class TextRAG:
         self,
         search_type: str = SearchType.TEXT,
         model_name: str = SentenceTransformerModel.ALL_MINILM_L6_V2,
-        text_fields: List[str] | None = None,
+        text_fields: list[str] | None = None,
     ):
         self.search_type = search_type
         self.model_name = model_name

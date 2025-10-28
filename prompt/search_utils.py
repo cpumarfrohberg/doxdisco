@@ -1,5 +1,5 @@
 # Document search utilities
-from typing import Any, Dict, List
+from typing import Any
 
 NUM_RESULTS = 5
 
@@ -10,7 +10,7 @@ class RAGError(Exception):
     pass
 
 
-def search_documents(question: str, index: Any | None = None) -> List[Dict[str, Any]]:
+def search_documents(question: str, index: Any | None = None) -> list[dict[str, Any]]:
     """
     Search for relevant documents using the provided search index.
 

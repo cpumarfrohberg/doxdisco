@@ -1,6 +1,6 @@
 # LLM interaction utilities
 import re
-from typing import Any, Dict, List
+from typing import Any
 
 from openai import OpenAI
 
@@ -14,7 +14,7 @@ CONFIDENCE = 0.5
 
 def query_with_context(
     question: str,
-    index: Any | None = None,
+    index: Any = None,
     openai_client: OpenAI | None = None,
     instruction_type: str = InstructionType.PYDANTIC_AI_EXPERT,
 ) -> RAGAnswer:
@@ -37,7 +37,7 @@ def query_with_context(
         raise RAGError("OpenAI client is required")
 
     try:
-        search_results: List[Dict[str, Any]] = search_documents(question, index)
+        search_results: list[dict[str, Any]] = search_documents(question, index)
 
         user_prompt: str = build_prompt(question, search_results, instruction_type)
         messages = [{"role": "user", "content": user_prompt}]
@@ -72,7 +72,7 @@ def query_with_context(
 
 
 def _generate_fallback_response(
-    question: str, search_results: List[Dict[str, Any]], openai_client: OpenAI
+    question: str, search_results: list[dict[str, Any]], openai_client: OpenAI
 ) -> RAGAnswer:
     """
     Generate a fallback response when structured output parsing fails.

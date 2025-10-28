@@ -1,5 +1,5 @@
 # Vector search implementation using SentenceTransformers
-from typing import Any, Dict, List
+from typing import Any
 
 import numpy as np
 from sentence_transformers import SentenceTransformer
@@ -10,7 +10,7 @@ NUM_RESULTS = 5
 class VectorIndex:
     """Vector-based search index using SentenceTransformers embeddings"""
 
-    def __init__(self, model: SentenceTransformer, chunks: List[Dict[str, Any]]):
+    def __init__(self, model: SentenceTransformer, chunks: list[dict[str, Any]]):
         self.model = model
         self.chunks = chunks
         self.embeddings = None
@@ -41,7 +41,7 @@ class VectorIndex:
 
     def search(
         self, query: str, num_results: int = NUM_RESULTS
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Search for similar chunks using vector similarity"""
         # Compute query embedding
         query_embedding = self.model.encode([query])
@@ -61,7 +61,7 @@ class VectorIndex:
 
 
 def create_vector_index(
-    chunks: List[Dict[str, Any]], model: SentenceTransformer
+    chunks: list[dict[str, Any]], model: SentenceTransformer
 ) -> VectorIndex:
     """Create a vector index from chunks using the specified model"""
     return VectorIndex(model, chunks)

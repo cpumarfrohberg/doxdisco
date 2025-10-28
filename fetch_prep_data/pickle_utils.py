@@ -4,7 +4,7 @@ import hashlib
 import pickle
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 # Security limits
 MAX_PICKLE_SIZE = 100_000_000  # 100MB
@@ -30,7 +30,7 @@ def validate_path(filepath: str) -> Path:
 
 
 def save_parsed_data(
-    data: List[Dict[str, Any]], filepath: str = "parsed_data.pkl"
+    data: list[dict[str, Any]], filepath: str = "parsed_data.pkl"
 ) -> None:
     """Save parsed data with basic security."""
     filepath = validate_path(filepath)
@@ -60,7 +60,7 @@ def save_parsed_data(
     print(f"✅ Saved {len(data)} documents to {filepath}")
 
 
-def load_parsed_data(filepath: str = "parsed_data.pkl") -> List[Dict[str, Any]]:
+def load_parsed_data(filepath: str = "parsed_data.pkl") -> list[dict[str, Any]]:
     """Load parsed data with basic security."""
     filepath = validate_path(filepath)
 
@@ -115,7 +115,7 @@ def _verify_hash(filepath: Path) -> None:
         raise ValueError("File integrity check failed")
 
 
-def validate_data_structure(data: List[Dict[str, Any]]) -> None:
+def validate_data_structure(data: list[dict[str, Any]]) -> None:
     """Validate data structure."""
     if not isinstance(data, list):
         raise ValueError("Data must be a list")

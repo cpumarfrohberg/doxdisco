@@ -1,6 +1,6 @@
 # Prompt construction utilities
 import json
-from typing import Any, Dict, List
+from typing import Any
 
 from config import InstructionType
 from prompt.models import SearchResult
@@ -8,7 +8,7 @@ from prompt.models import SearchResult
 
 def build_prompt(
     question: str,
-    search_results: List[Dict[str, Any]],
+    search_results: list[dict[str, Any]],
     instruction_type: str = InstructionType.PYDANTIC_AI_EXPERT,
 ) -> str:
     """
@@ -48,7 +48,7 @@ def build_prompt(
 
 
 def _build_faq_assistant_prompt(
-    question: str, structured_results: List[SearchResult]
+    question: str, structured_results: list[SearchResult]
 ) -> str:
     """Build prompt for FAQ assistant role"""
     return f"""
@@ -70,7 +70,7 @@ Respond in the exact format specified by the RAGAnswer model.
 
 
 def _build_pydantic_ai_expert_prompt(
-    question: str, structured_results: List[SearchResult]
+    question: str, structured_results: list[SearchResult]
 ) -> str:
     """Build prompt for PydanticAI documentation expert role"""
     return f"""

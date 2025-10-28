@@ -1,6 +1,6 @@
 # GitHub data parsing utilities with bank-grade security validation
 from datetime import date, datetime
-from typing import Any, Dict, List
+from typing import Any
 
 import frontmatter
 
@@ -12,7 +12,7 @@ MAX_DEPTH = 10
 MAX_FILES = GitHubConfig.MAX_FILES.value
 
 
-def parse_data(data_raw: List[RawRepositoryFile]) -> List[Dict[str, Any]]:
+def parse_data(data_raw: list[RawRepositoryFile]) -> list[dict[str, Any]]:
     """
     Parse raw GitHub repository files into structured data with security validation.
     Handles files with invalid frontmatter by skipping frontmatter and using content only.
@@ -63,7 +63,7 @@ def parse_data(data_raw: List[RawRepositoryFile]) -> List[Dict[str, Any]]:
     return data_parsed
 
 
-def _convert_datetime_to_string(data: Dict[str, Any], depth: int = 0) -> Dict[str, Any]:
+def _convert_datetime_to_string(data: dict[str, Any], depth: int = 0) -> dict[str, Any]:
     """
     Recursively convert datetime and date objects to ISO format strings with depth limit.
 
