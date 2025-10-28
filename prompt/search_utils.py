@@ -3,12 +3,6 @@ from typing import Any
 NUM_RESULTS = 5
 
 
-class RAGError(Exception):
-    """Base exception for RAG-related errors"""
-
-    pass
-
-
 def search_documents(question: str, index: Any | None = None) -> list[dict[str, Any]]:
     """
     Search for relevant documents using the provided search index.
@@ -24,14 +18,14 @@ def search_documents(question: str, index: Any | None = None) -> list[dict[str, 
         List of relevant document dictionaries with content, filename, and metadata
 
     Raises:
-        RAGError: If question is empty, index is None, or search fails
+        ValueError: If question is empty, index is None, or search fails
     """
     # Input validation (no try/except needed)
     if not question or not question.strip():
-        raise RAGError("Question cannot be empty")
+        raise ValueError("Question cannot be empty")
 
     if index is None:
-        raise RAGError("Search index is required")
+        raise ValueError("Search index is required")
 
     boost_dict = {
         # Core programming concepts (highest priority)
@@ -66,11 +60,11 @@ def search_documents(question: str, index: Any | None = None) -> list[dict[str, 
                 num_results=NUM_RESULTS,
             )
     except Exception as e:
-        # Wrap unexpected errors as RAGError
-        raise RAGError(f"Search failed: {str(e)}") from e
+        # Wrap unexpected errors as ValueError
+        raise ValueError(f"Search failed: {str(e)}") from e
 
     # Result validation (no try/except needed)
     if not results:
-        raise RAGError("No documents found for the given question")
+        raise ValueError("No documents found for the given question")
 
     return results

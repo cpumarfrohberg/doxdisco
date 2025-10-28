@@ -7,7 +7,8 @@ from config import (
     SentenceTransformerModel,
 )
 from core.text_rag import TextRAG
-from prompt.search_utils import RAGError
+
+# All errors are now ValueError
 
 app = typer.Typer()
 rag = None
@@ -116,7 +117,7 @@ def main(
             if rag_response.reasoning:
                 typer.echo(f"\n💭 Reasoning: {rag_response.reasoning}")
 
-    except RAGError as e:
+    except ValueError as e:
         typer.echo(f"❌ Error: {str(e)}", err=True)
         typer.echo("💡 Please check your input and try again.", err=True)
         raise typer.Exit(1)

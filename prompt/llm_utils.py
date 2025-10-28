@@ -7,7 +7,7 @@ from openai import OpenAI
 from config import InstructionType, ModelType
 from prompt.models import RAGAnswer
 from prompt.prompt_builder import build_prompt
-from prompt.search_utils import RAGError, search_documents
+from prompt.search_utils import search_documents
 
 CONFIDENCE = 0.5
 
@@ -31,10 +31,10 @@ def query_with_context(
         Structured RAGAnswer with validated data
 
     Raises:
-        RAGError: If any error occurs during processing
+        ValueError: If any error occurs during processing
     """
     if openai_client is None:
-        raise RAGError("OpenAI client is required")
+        raise ValueError("OpenAI client is required")
 
     try:
         search_results: list[dict[str, Any]] = search_documents(question, index)
@@ -49,7 +49,7 @@ def query_with_context(
 
             rag_answer = response.output_parsed
             if not rag_answer.answer.strip():
-                raise RAGError("Empty answer received from LLM")
+                raise ValueError("Empty answer received from LLM")
 
             return rag_answer
 
@@ -61,14 +61,12 @@ def query_with_context(
                 )
                 return fallback_response
             except Exception:
-                raise RAGError(
+                raise ValueError(
                     f"Both structured and fallback responses failed: {str(e)}"
                 ) from e
 
-    except RAGError:
-        raise
     except Exception as e:
-        raise RAGError(f"Unexpected error in RAG processing: {str(e)}") from e
+        raise ValueError(f"Unexpected error in RAG processing: {str(e)}") from e
 
 
 def _generate_fallback_response(
@@ -90,7 +88,7 @@ def _generate_fallback_response(
         RAGAnswer object with parsed response data
 
     Raises:
-        RAGError: If fallback response generation fails
+        ValueError: If fallback response generation fails
     """
     try:
         # Create a simple prompt for fallback
@@ -143,4 +141,4 @@ Provide a clear answer and rate your confidence from 0.0 to 1.0.
         )
 
     except Exception as e:
-        raise RAGError(f"Fallback response generation failed: {str(e)}") from e
+        raise ValueError(f"Fallback response generation failed: {str(e)}") from e
