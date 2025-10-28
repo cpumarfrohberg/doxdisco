@@ -1,28 +1,13 @@
-# Secure pickle handler with minimal security validation
-import builtins
 import hashlib
 import pickle
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-# Security limits
 MAX_PICKLE_SIZE = 100_000_000  # 100MB
 
 
-class SafeUnpickler(pickle.Unpickler):
-    """Safe unpickler that only allows basic types."""
-
-    def find_class(self, module: str, name: str) -> Any:
-        if module == "builtins" and name in {"dict", "list", "str", "int", "float"}:
-            return getattr(builtins, name)
-        elif module == "datetime" and name == "datetime":
-            return datetime
-        raise pickle.UnpicklingError(f"Unsafe class: {module}.{name}")
-
-
 def validate_path(filepath: str) -> Path:
-    """Basic path validation."""
     path = Path(filepath).resolve()
     if ".." in str(path):
         raise ValueError("Invalid path")
@@ -32,16 +17,10 @@ def validate_path(filepath: str) -> Path:
 def save_parsed_data(
     data: list[dict[str, Any]], filepath: str = "parsed_data.pkl"
 ) -> None:
-    """Save parsed data with basic security."""
     filepath = validate_path(filepath)
 
-    if not isinstance(data, list):
-        raise ValueError("Data must be a list")
-
-    # Ensure directory exists
     filepath.parent.mkdir(parents=True, exist_ok=True)
 
-    # Add metadata
     save_data = {
         "data": data,
         "metadata": {
@@ -51,32 +30,29 @@ def save_parsed_data(
         },
     }
 
-    # Save with pickle
     with open(filepath, "wb") as f:
         pickle.dump(save_data, f)
 
-    # Create integrity hash
     _create_hash(filepath)
     print(f"✅ Saved {len(data)} documents to {filepath}")
 
 
 def load_parsed_data(filepath: str = "parsed_data.pkl") -> list[dict[str, Any]]:
-    """Load parsed data with basic security."""
     filepath = validate_path(filepath)
 
     if not filepath.exists():
         raise FileNotFoundError(f"File not found: {filepath}")
 
-    # Check file size
     if filepath.stat().st_size > MAX_PICKLE_SIZE:
         raise ValueError("File too large")
 
-    # Verify integrity
-    _verify_hash(filepath)
+    try:
+        _verify_hash(filepath)
+    except ValueError as e:
+        raise ValueError(f"Failed to verify pickle file integrity: {e}") from e
 
-    # Load with safe unpickler
     with open(filepath, "rb") as f:
-        loaded = SafeUnpickler(f).load()
+        loaded = pickle.load(f)
 
     if not isinstance(loaded, dict) or "data" not in loaded:
         raise ValueError("Invalid pickle file")
@@ -90,7 +66,6 @@ def load_parsed_data(filepath: str = "parsed_data.pkl") -> list[dict[str, Any]]:
 
 
 def _create_hash(filepath: Path) -> None:
-    """Create integrity hash file."""
     hash_file = filepath.with_suffix(filepath.suffix + ".hash")
     with open(filepath, "rb") as f:
         file_hash = hashlib.sha256(f.read()).hexdigest()
@@ -99,7 +74,6 @@ def _create_hash(filepath: Path) -> None:
 
 
 def _verify_hash(filepath: Path) -> None:
-    """Verify file integrity."""
     hash_file = filepath.with_suffix(filepath.suffix + ".hash")
 
     if not hash_file.exists():
@@ -116,10 +90,6 @@ def _verify_hash(filepath: Path) -> None:
 
 
 def validate_data_structure(data: list[dict[str, Any]]) -> None:
-    """Validate data structure."""
-    if not isinstance(data, list):
-        raise ValueError("Data must be a list")
-
     for i, item in enumerate(data):
         if not isinstance(item, dict):
             raise ValueError(f"Item {i} must be a dictionary")

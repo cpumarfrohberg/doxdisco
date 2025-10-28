@@ -1,4 +1,3 @@
-# GitHub repository data reader
 import io
 import traceback
 import zipfile
@@ -6,7 +5,7 @@ from dataclasses import dataclass
 from typing import Callable, Optional
 
 import requests
-from pydantic import BaseModel, Field, HttpUrl, ValidationError
+from pydantic import BaseModel, Field, HttpUrl
 
 from config import FileProcessingConfig, GitHubConfig, RepositoryConfig
 
@@ -41,14 +40,11 @@ def read_github_data(
     allowed_extensions: set | None = None,
     filename_filter: Callable | None = None,
 ) -> list[RawRepositoryFile]:
-    try:
-        request = RepositoryRequest(
-            repo_owner=repo_owner,
-            repo_name=repo_name,
-            allowed_extensions=allowed_extensions,
-        )
-    except ValidationError as e:
-        raise ValidationError(f"Invalid repository parameters: {e}")
+    request = RepositoryRequest(
+        repo_owner=repo_owner,
+        repo_name=repo_name,
+        allowed_extensions=allowed_extensions,
+    )
 
     repo_owner = request.repo_owner
     repo_name = request.repo_name
@@ -68,26 +64,15 @@ def read_github_data(
 
     try:
         resp = requests.get(url, timeout=github_config.timeout)
-
-        if resp.status_code == 404:
-            raise Exception(
-                f"Repository not found: {repo_owner}/{repo_name}. Please check the repository name and owner."
-            )
-        elif resp.status_code == 403:
-            raise Exception(
-                f"Access forbidden to repository: {repo_owner}/{repo_name}. Repository may be private or access is blocked."
-            )
-        elif resp.status_code == 429:
-            raise Exception(
-                "Rate limited by GitHub. Please wait before making another request."
-            )
-        elif resp.status_code != 200:
-            raise Exception(f"Failed to download repository: HTTP {resp.status_code}")
-
+        resp.raise_for_status()
+    except requests.exceptions.HTTPError as e:
+        raise Exception(
+            f"Failed to download repository: HTTP {e.response.status_code}"
+        ) from e
     except requests.exceptions.Timeout:
         raise Exception(f"Request timeout after {github_config.timeout} seconds")
     except requests.exceptions.RequestException as e:
-        raise Exception(f"Network error: {e}")
+        raise Exception(f"Network error: {e}") from e
 
     file_config = FileProcessingConfig
 
@@ -117,7 +102,7 @@ def _extract_files(
             continue
 
         filepath = _normalize_filepath(file_info.filename)
-        # Security: Check file extension
+
         if not _is_safe_file(filepath, file_config):
             skipped_stats["unsafe_type"] += 1
             continue
@@ -132,7 +117,6 @@ def _extract_files(
                 if content is not None:
                     content = content.strip()
 
-                # Security: Check content size
                 if len(content) > file_config.MAX_CONTENT_SIZE.value:
                     skipped_stats["oversized"] += 1
                     continue
@@ -146,7 +130,6 @@ def _extract_files(
             traceback.print_exc()
             continue
 
-    # Print summary instead of individual messages
     total_skipped = sum(skipped_stats.values()) - skipped_stats["processed"]
     if total_skipped > 0:
         print("📊 File processing summary:")
@@ -162,7 +145,6 @@ def _extract_files(
 
 
 def _is_safe_file(filepath: str, file_config: type) -> bool:
-    """Check if file is safe to process based on extension."""
     ext = _get_extension(filepath).lower()
 
     if ext in file_config.BLOCKED_EXTENSIONS.value:
@@ -182,10 +164,8 @@ def _is_safe_file(filepath: str, file_config: type) -> bool:
 def _should_skip_file(
     filepath: str, allowed_extensions: set, filename_filter: Callable
 ) -> bool:
-    """Determine whether a file should be skipped during processing."""
     filepath = filepath.lower()
 
-    # directory
     if filepath.endswith("/"):
         return True
 

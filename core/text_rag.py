@@ -68,16 +68,13 @@ class TextRAG:
         print(f"📝 Created {len(self.chunks)} document chunks")
 
         if self.search_type == SearchType.TEXT:
-            # Standard text search with minsearch
             self.index = Index(text_fields=self.text_fields)
             self.index.fit(self.chunks)
         elif self.search_type == SearchType.VECTOR_MINSEARCH:
-            # Minsearch with embeddings (placeholder for future implementation)
             self.index = Index(text_fields=self.text_fields)
             self.index.fit(self.chunks)
             print("⚠️  Vector minsearch not yet implemented, using text search")
         elif self.search_type == SearchType.VECTOR_SENTENCE_TRANSFORMERS:
-            # SentenceTransformers vector search
             if self.embedder is None:
                 raise ValueError("SentenceTransformer model not initialized")
             self.index = create_vector_index(self.chunks, self.embedder)

@@ -1,4 +1,3 @@
-# Document search utilities
 from typing import Any
 
 NUM_RESULTS = 5
@@ -28,7 +27,6 @@ def search_documents(question: str, index: Any | None = None) -> list[dict[str, 
         RAGError: If question is empty, index is None, or search fails
     """
     try:
-        # Basic validation
         if not question or not question.strip():
             raise RAGError("Question cannot be empty")
 
@@ -58,7 +56,6 @@ def search_documents(question: str, index: Any | None = None) -> list[dict[str, 
             # Vector search (query, num_results)
             results = index.search(question, num_results=NUM_RESULTS)
         else:
-            # Text search (minsearch) with boosting
             results = index.search(
                 question,
                 boost_dict=boost_dict,
@@ -70,8 +67,9 @@ def search_documents(question: str, index: Any | None = None) -> list[dict[str, 
             raise RAGError("No documents found for the given question")
 
         return results
-
     except RAGError:
+        # Let RAGError pass through
         raise
     except Exception as e:
+        # Wrap unexpected errors as RAGError
         raise RAGError(f"Search failed: {str(e)}") from e
