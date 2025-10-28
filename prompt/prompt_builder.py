@@ -9,7 +9,7 @@ from prompt.models import SearchResult
 def build_prompt(
     question: str,
     search_results: List[Dict[str, Any]],
-    instruction_type: str = InstructionType.PYDANTIC_AI_EXPERT.value,
+    instruction_type: str = InstructionType.PYDANTIC_AI_EXPERT,
 ) -> str:
     """
     Build a structured prompt for the LLM using search results.
@@ -39,7 +39,7 @@ def build_prompt(
         )
 
     # Get the appropriate prompt template based on instruction type
-    if instruction_type == InstructionType.PYDANTIC_AI_EXPERT.value:
+    if instruction_type == InstructionType.PYDANTIC_AI_EXPERT:
         prompt = _build_pydantic_ai_expert_prompt(question, structured_results)
     else:
         prompt = _build_faq_assistant_prompt(question, structured_results)

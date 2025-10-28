@@ -20,8 +20,8 @@ class TextRAG:
 
     def __init__(
         self,
-        search_type: str = SearchType.TEXT.value,
-        model_name: str = SentenceTransformerModel.ALL_MINILM_L6_V2.value,
+        search_type: str = SearchType.TEXT,
+        model_name: str = SentenceTransformerModel.ALL_MINILM_L6_V2,
         text_fields: List[str] | None = None,
     ):
         self.search_type = search_type
@@ -41,14 +41,8 @@ class TextRAG:
         self.index = None
         self.embedder = None
 
-        if search_type == SearchType.VECTOR_SENTENCE_TRANSFORMERS.value:
-            try:
-                self.embedder = SentenceTransformer(model_name)
-            except ImportError:
-                raise ImportError(
-                    "sentence-transformers is required for vector_sentence_transformers search type. "
-                    "Install it with: pip install sentence-transformers"
-                )
+        if search_type == SearchType.VECTOR_SENTENCE_TRANSFORMERS:
+            self.embedder = SentenceTransformer(model_name)
 
     def load_repository(
         self,
@@ -61,7 +55,6 @@ class TextRAG:
     ):
         """Load and process GitHub repository data"""
 
-        # Step 1: Fetch GitHub data
         github_data = read_github_data(
             repo_owner=repo_owner,
             repo_name=repo_name,
@@ -69,24 +62,21 @@ class TextRAG:
             filename_filter=filename_filter,
         )
 
-        # Step 2: Parse the data
         parsed_data = parse_data(github_data)
 
-        # Step 3: Chunk the documents
         self.chunks = chunk_documents(parsed_data, size=chunk_size, step=chunk_step)
         print(f"📝 Created {len(self.chunks)} document chunks")
 
-        # Step 4: Create appropriate index based on search type
-        if self.search_type == SearchType.TEXT.value:
+        if self.search_type == SearchType.TEXT:
             # Standard text search with minsearch
             self.index = Index(text_fields=self.text_fields)
             self.index.fit(self.chunks)
-        elif self.search_type == SearchType.VECTOR_MINSEARCH.value:
+        elif self.search_type == SearchType.VECTOR_MINSEARCH:
             # Minsearch with embeddings (placeholder for future implementation)
             self.index = Index(text_fields=self.text_fields)
             self.index.fit(self.chunks)
             print("⚠️  Vector minsearch not yet implemented, using text search")
-        elif self.search_type == SearchType.VECTOR_SENTENCE_TRANSFORMERS.value:
+        elif self.search_type == SearchType.VECTOR_SENTENCE_TRANSFORMERS:
             # SentenceTransformers vector search
             if self.embedder is None:
                 raise ValueError("SentenceTransformer model not initialized")

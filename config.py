@@ -1,5 +1,5 @@
 import os
-from enum import Enum
+from enum import Enum, StrEnum
 
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -7,7 +7,7 @@ from openai import OpenAI
 load_dotenv()
 
 
-class ModelType(Enum):
+class ModelType(StrEnum):
     GPT_4O_MINI = "gpt-4o-mini"
     GPT_4O = "gpt-4o"
     GPT_3_5_TURBO = "gpt-3.5-turbo"
@@ -26,20 +26,20 @@ class RepositoryConfig(Enum):
     GITHUB_CODELOAD_URL = "https://codeload.github.com"
 
 
-class SearchType(Enum):
+class SearchType(StrEnum):
     TEXT = "text"
     VECTOR_MINSEARCH = "vector_minsearch"
     VECTOR_SENTENCE_TRANSFORMERS = "vector_sentence_transformers"
 
 
-class InstructionType(Enum):
+class InstructionType(StrEnum):
     """Types of instruction/prompt templates for different AI roles"""
 
     FAQ_ASSISTANT = "faq_assistant"
     PYDANTIC_AI_EXPERT = "pydantic_ai_expert"
 
 
-class SentenceTransformerModel(Enum):
+class SentenceTransformerModel(StrEnum):
     # Small models (fast, good for testing)
     ALL_MINILM_L6_V2 = "all-MiniLM-L6-v2"
     ALL_MPNET_BASE_V2 = "all-mpnet-base-v2"

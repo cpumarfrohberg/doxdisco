@@ -16,7 +16,7 @@ def query_with_context(
     question: str,
     index: Any | None = None,
     openai_client: OpenAI | None = None,
-    instruction_type: str = InstructionType.PYDANTIC_AI_EXPERT.value,
+    instruction_type: str = InstructionType.PYDANTIC_AI_EXPERT,
 ) -> RAGAnswer:
     """
     Answer a question using RAG with structured Pydantic output.
@@ -44,7 +44,7 @@ def query_with_context(
 
         try:
             response = openai_client.responses.parse(
-                model=ModelType.GPT_4O_MINI.value, input=messages, text_format=RAGAnswer
+                model=ModelType.GPT_4O_MINI, input=messages, text_format=RAGAnswer
             )
 
             rag_answer = response.output_parsed
@@ -115,7 +115,7 @@ Provide a clear answer and rate your confidence from 0.0 to 1.0.
         messages = [{"role": "user", "content": fallback_prompt}]
 
         response = openai_client.responses.create(
-            model=ModelType.GPT_4O_MINI.value, input=messages
+            model=ModelType.GPT_4O_MINI, input=messages
         )
 
         answer_text = response.output_text.strip()

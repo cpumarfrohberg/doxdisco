@@ -24,13 +24,13 @@ def main(
         help="Overlap ratio between chunks (0.0-1.0)",
     ),
     search_type: str = typer.Option(
-        SearchType.TEXT.value,
+        SearchType.TEXT,
         "--search-type",
         "-s",
         help="Search type: text, vector_minsearch, vector_sentence_transformers",
     ),
     model_name: str = typer.Option(
-        SentenceTransformerModel.ALL_MINILM_L6_V2.value,
+        SentenceTransformerModel.ALL_MINILM_L6_V2,
         "--model",
         "-m",
         help="SentenceTransformer model name (only for vector_sentence_transformers)",
