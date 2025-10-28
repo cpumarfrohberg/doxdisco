@@ -26,12 +26,16 @@ class TextRAG:
     ):
         self.search_type = search_type
         self.model_name = model_name
-        self.text_fields = text_fields or [
-            "content",
-            "filename",
-            "title",
-            "description",
-        ]
+        self.text_fields = (
+            text_fields
+            if text_fields is not None
+            else [
+                "content",
+                "filename",
+                "title",
+                "description",
+            ]
+        )
         self.documents = []
         self.chunks = []
         self.index = None
