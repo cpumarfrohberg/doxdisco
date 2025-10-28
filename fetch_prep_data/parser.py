@@ -1,4 +1,5 @@
 # GitHub data parsing utilities with bank-grade security validation
+from collections.abc import Mapping, Sequence
 from datetime import date, datetime
 from typing import Any
 
@@ -8,7 +9,6 @@ from config import FileProcessingConfig, GitHubConfig
 
 from .reader import RawRepositoryFile
 
-MAX_DEPTH = 10
 MAX_FILES = GitHubConfig.MAX_FILES.value
 
 
@@ -27,8 +27,6 @@ def parse_data(data_raw: list[RawRepositoryFile]) -> list[dict[str, Any]]:
     Raises:
         ValueError: If input validation fails
     """
-    if not isinstance(data_raw, list):
-        raise ValueError("Input must be a list")
 
     if len(data_raw) > MAX_FILES:
         raise ValueError(f"Too many files: {len(data_raw)} (max: {MAX_FILES})")
@@ -45,7 +43,7 @@ def parse_data(data_raw: list[RawRepositoryFile]) -> list[dict[str, Any]]:
             data["filename"] = f.filename
 
             # Convert datetime and date objects to ISO format strings for JSON compatibility
-            data = _convert_datetime_to_string(data, depth=0)
+            data = _convert_datetime_to_string(data)
             data_parsed.append(data)
 
         except (frontmatter.FrontMatterError, UnicodeDecodeError) as e:
@@ -63,34 +61,28 @@ def parse_data(data_raw: list[RawRepositoryFile]) -> list[dict[str, Any]]:
     return data_parsed
 
 
-def _convert_datetime_to_string(data: dict[str, Any], depth: int = 0) -> dict[str, Any]:
+def _convert_datetime_to_string(obj: Any) -> Any:
     """
-    Recursively convert datetime and date objects to ISO format strings with depth limit.
+    Recursively convert datetime and date objects to ISO format strings.
+
+    Handles nested dictionaries, lists, and other sequences by recursively
+    traversing the data structure and converting any datetime/date objects found.
 
     Args:
-        data: Dictionary that may contain datetime or date objects
-        depth: Current recursion depth (for security)
+        obj: Any Python object that may contain datetime or date objects
 
     Returns:
-        Dictionary with datetime and date objects converted to ISO strings
+        Object with datetime and date objects converted to ISO strings
 
-    Raises:
-        ValueError: If recursion depth exceeds limit
+    Example:
+        >>> data = {"key": datetime.now(), "items": [{"created": datetime.now()}]}
+        >>> _convert_datetime_to_string(data)
+        {"key": "2024-01-01T12:00:00", "items": [{"created": "2024-01-01T12:00:00"}]}
     """
-    if depth > MAX_DEPTH:
-        raise ValueError(f"Data structure too deep: {depth} levels (max: {MAX_DEPTH})")
-
-    converted = {}
-    for key, value in data.items():
-        if isinstance(value, (datetime, date)):
-            converted[key] = value.isoformat()
-        elif isinstance(value, dict):
-            converted[key] = _convert_datetime_to_string(value, depth + 1)
-        elif isinstance(value, list):
-            converted[key] = [
-                item.isoformat() if isinstance(item, (datetime, date)) else item
-                for item in value
-            ]
-        else:
-            converted[key] = value
-    return converted
+    if isinstance(obj, (datetime, date)):
+        return obj.isoformat()
+    if isinstance(obj, Mapping):
+        return {k: _convert_datetime_to_string(v) for k, v in obj.items()}
+    if isinstance(obj, Sequence) and not isinstance(obj, (str, bytes, bytearray)):
+        return [_convert_datetime_to_string(x) for x in obj]
+    return obj
