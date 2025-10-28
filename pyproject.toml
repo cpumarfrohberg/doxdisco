@@ -40,6 +40,9 @@ python_files = ["test_*.py"]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools]
+py-modules = ["cli", "config"]
+
 [tool.setuptools.packages.find]
 include = ["core*", "prompt*", "fetch_prep_data*"]
 
