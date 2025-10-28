@@ -20,7 +20,6 @@ def search_documents(question: str, index: Any | None = None) -> list[dict[str, 
     Raises:
         ValueError: If question is empty, index is None, or search fails
     """
-    # Input validation (no try/except needed)
     if not question or not question.strip():
         raise ValueError("Question cannot be empty")
 
@@ -47,7 +46,6 @@ def search_documents(question: str, index: Any | None = None) -> list[dict[str, 
     # Check if it's a vector index by checking the class name
     is_vector = hasattr(index, "__class__") and "VectorIndex" in str(index.__class__)
 
-    # ONLY wrap the actual search operation
     try:
         if is_vector:
             # Vector search (query, num_results)
@@ -60,10 +58,8 @@ def search_documents(question: str, index: Any | None = None) -> list[dict[str, 
                 num_results=NUM_RESULTS,
             )
     except Exception as e:
-        # Wrap unexpected errors as ValueError
         raise ValueError(f"Search failed: {str(e)}") from e
 
-    # Result validation (no try/except needed)
     if not results:
         raise ValueError("No documents found for the given question")
 
